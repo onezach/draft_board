@@ -1,23 +1,37 @@
-import logo from './logo.svg';
-import './App.css';
+// import "./App.css";
+import "./App.scss";
+import DraftBoard from "./components/DraftBoard";
 
 function App() {
+  const numRounds = 2;
+  // const numTeams = 12;
+
+  // const teams = [
+  //   "Team 1",
+  //   "Team 2",
+  //   "Team 3",
+  //   "Team 4",
+  //   "Team 5",
+  //   "Team 6",
+  //   "Team 7",
+  //   "Team 8",
+  //   "Team 9",
+  //   "Team 10",
+  //   "Team 11",
+  //   "Team 12",
+  // ];
+
+  const teamsSmall = ["Team 1", "Team 2"];
+
+  const timePerPick = 10; // seconds
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="App-container">
+      <DraftBoard
+        numRounds={numRounds}
+        teams={teamsSmall}
+        timePerPick={timePerPick}
+      />
     </div>
   );
 }
