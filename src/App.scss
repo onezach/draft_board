@@ -24,6 +24,12 @@
   border: solid black;
 }
 
+@mixin timer() {
+  @include centerCenter();
+  display: flex;
+  height: 60%;
+}
+
 $defaultRadius: 12px;
 
 .App-container {
@@ -40,16 +46,19 @@ $defaultRadius: 12px;
   flex-wrap: wrap;
   flex-direction: row;
   width: 95vw;
-  height: 90vh;
+  height: 85vh;
   border: solid black;
   overflow: scroll;
 }
 
 .Timer {
-  @include centerCenter();
-  display: flex;
-  //   @include borderBox();
-  height: 60%;
+  @include timer();
+}
+
+.Timer-low {
+  @include timer();
+  background-color: red;
+  color: white;
 }
 
 .Label {

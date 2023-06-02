@@ -1,24 +1,31 @@
-import React, { useState } from "react";
-import Label from "./TeamLabel";
+import React, { useState, useEffect, useCallback } from "react";
 import Chip from "./Chip";
 import PickModal from "./PickModal";
-import { generateNumArray, computePickValues } from "../Functions";
+import ResultsModal from "./ResultsModal";
+import {
+  generateNumArray,
+  computePickValues,
+  formatTime,
+} from "../StaticFunctions";
 
 const DraftBoard = ({ numRounds, timePerPick, teams }) => {
-  const [boardInitialized, setBoardInitialized] = useState(false);
-  const [draftStatus, setDraftStatus] = useState("active");
-
   const numTeams = teams.length;
   const totalPicks = numRounds * numTeams;
+
+  const [boardInitialized, setBoardInitialized] = useState(false);
+  const [draftStatus, setDraftStatus] = useState("active");
 
   const [currentPick, setCurrentPick] = useState(1);
   const [picks, setPicks] = useState([]);
 
-  const [modalActive, setModalActive] = useState(false);
-  const [modalStatus, setModalStatus] = useState();
-  const [modalPickData, setModalPickData] = useState();
+  const [pickModalActive, setPickModalActive] = useState(false);
+  const [pickModalStatus, setPickModalStatus] = useState();
+  const [pickModalData, setPickModalData] = useState();
 
-  const [timerActive, setTimerActive] = useState(true);
+  const [resultsModalActive, setResultsModalActive] = useState(false);
+
+  const [pickTimerActive, setPickTimerActive] = useState(true);
+  const [timeOnClock, setTimeOnClock] = useState(timePerPick);
 
   const initializeBoard = () => {
     let teamsArr = generateNumArray(1, numTeams);
@@ -44,14 +51,14 @@ const DraftBoard = ({ numRounds, timePerPick, teams }) => {
 
     return picks.map((team, t_index) => (
       <div key={"team" + (t_index + 1) + "_row"} className="Row-container">
-        <Label team_name={teams[t_index]} team_number={t_index + 1} />
+        {/* <Label team_name={teams[t_index]} team_number={t_index + 1} /> */}
+        <div id={"t" + t_index + 1} className={"Label-double"}>
+          <p>{teams[t_index]}</p>
+        </div>
         {team.map((round, r_index) => (
           <Chip
             pickData={round}
             onClick={handleChipClick}
-            timerActive={timerActive}
-            timePerPick={timePerPick}
-            onMissedPick={handleMissedPick}
             draftStatus={draftStatus}
             key={"chip" + (r_index + 1) + "." + (t_index + 1)}
           />
@@ -62,27 +69,32 @@ const DraftBoard = ({ numRounds, timePerPick, teams }) => {
 
   const handleChipClick = (team, round) => {
     const chipData = picks[team - 1][round - 1];
-    setModalStatus(chipData.status);
-    setModalActive(true);
-    setModalPickData(chipData);
-    setTimerActive(false);
-  };
-
-  const handleCloseModal = () => {
-    setModalActive(false);
-    setModalStatus();
-    setModalPickData();
-    setTimerActive(true);
-  };
-
-  const advanceCurrentPick = () => {
-    if (currentPick < totalPicks) {
-      setCurrentPick((current) => current + 1);
-    } else {
-      setTimerActive(false);
-      setDraftStatus("incomplete");
+    setPickModalStatus(chipData.status);
+    setPickModalActive(true);
+    setPickModalData(chipData);
+    if (draftStatus === "active") {
+      setPickTimerActive(false);
     }
   };
+
+  const handleClosePickModal = () => {
+    setPickModalActive(false);
+    setPickModalStatus();
+    setPickModalData();
+    if (draftStatus === "active") {
+      setPickTimerActive(true);
+    }
+  };
+
+  const advanceCurrentPick = useCallback(() => {
+    if (currentPick < totalPicks) {
+      setCurrentPick((current) => current + 1);
+      setTimeOnClock(timePerPick);
+    } else {
+      setPickTimerActive(false);
+      setDraftStatus("incomplete");
+    }
+  }, [currentPick, timePerPick, totalPicks]);
 
   const handleConfirmedPick = (pickedPlayerData, pickNumber = currentPick) => {
     const confirmNewPick = picks.map((team) =>
@@ -101,14 +113,14 @@ const DraftBoard = ({ numRounds, timePerPick, teams }) => {
     );
 
     setPicks(confirmNewPick);
-    handleCloseModal();
+    handleClosePickModal();
 
     if (pickNumber === currentPick || draftStatus === "incomplete") {
       advanceCurrentPick();
     }
   };
 
-  const handleMissedPick = () => {
+  const handleMissedPick = useCallback(() => {
     const missedPick = picks.map((team) =>
       team.map((round) => {
         if (round.overall === currentPick) {
@@ -122,12 +134,11 @@ const DraftBoard = ({ numRounds, timePerPick, teams }) => {
     );
 
     setPicks(missedPick);
-    handleCloseModal();
     advanceCurrentPick();
-  };
+  }, [advanceCurrentPick, currentPick, picks]);
 
   const handleRequestPickUpdate = () => {
-    setModalStatus("update");
+    setPickModalStatus("update");
   };
 
   const validateDraft = () => {
@@ -143,6 +154,8 @@ const DraftBoard = ({ numRounds, timePerPick, teams }) => {
     setDraftStatus("finished");
   };
 
+  const handleCloseResultsModal = () => setResultsModalActive(false);
+
   const draftButton = () => {
     switch (draftStatus) {
       case "active":
@@ -150,7 +163,7 @@ const DraftBoard = ({ numRounds, timePerPick, teams }) => {
           <input
             type="button"
             value="Toggle Draft"
-            onClick={() => setTimerActive((current) => !current)}
+            onClick={() => setPickTimerActive((current) => !current)}
           />
         );
       case "incomplete":
@@ -165,24 +178,58 @@ const DraftBoard = ({ numRounds, timePerPick, teams }) => {
             onClick={() => setDraftStatus("confirmed")}
           />
         );
+      case "confirmed":
+        return (
+          <input
+            type="button"
+            value="View Results"
+            onClick={() => setResultsModalActive(true)}
+          />
+        );
       default:
     }
   };
 
+  useEffect(() => {
+    const timer = setInterval(() => {
+      if (pickTimerActive && timeOnClock > 0) {
+        setTimeOnClock((prevTime) => prevTime - 1);
+      }
+      if (timeOnClock <= 0) {
+        handleMissedPick();
+      }
+    }, 1000);
+
+    return () => {
+      clearInterval(timer);
+    };
+  }, [pickTimerActive, timeOnClock, handleMissedPick]);
+
   return (
-    <div className="Board">
+    <div>
       {draftButton()}
       {draftStatus === "confirmed" && <div>Draft finished</div>}
-      <PickModal
-        isOpen={modalActive}
-        onClose={handleCloseModal}
-        onConfirm={handleConfirmedPick}
-        modalStatus={modalStatus}
-        modalPickData={modalPickData}
-        onRequestPickUpdate={handleRequestPickUpdate}
-      />
-      {/* {draftStatus === "active" && <div>{buildChips()}</div>} */}
-      <div>{buildChips()}</div>
+      {draftStatus === "active" && (
+        <div className={timeOnClock > 10 ? "Timer" : "Timer-low"}>
+          <div>{formatTime(timeOnClock)}</div>
+        </div>
+      )}
+      <div className="Board">
+        <PickModal
+          isOpen={pickModalActive}
+          onClose={handleClosePickModal}
+          onConfirm={handleConfirmedPick}
+          modalStatus={pickModalStatus}
+          modalPickData={pickModalData}
+          onRequestPickUpdate={handleRequestPickUpdate}
+        />
+        <ResultsModal
+          isOpen={resultsModalActive}
+          onClose={handleCloseResultsModal}
+          data={picks}
+        />
+        <div>{buildChips()}</div>
+      </div>
     </div>
   );
 };

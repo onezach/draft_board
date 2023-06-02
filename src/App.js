@@ -3,7 +3,7 @@ import "./App.scss";
 import DraftBoard from "./components/DraftBoard";
 
 function App() {
-  const numRounds = 3;
+  const numRounds = 2;
   // const numTeams = 12;
 
   // const teams = [
@@ -23,7 +23,7 @@ function App() {
 
   const teamsSmall = ["Team 1", "Team 2"];
 
-  const timePerPick = 10; // seconds
+  const timePerPick = 15; // seconds
 
   return (
     <div className="App-container">

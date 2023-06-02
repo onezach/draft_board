@@ -1,14 +1,6 @@
 import React from "react";
-import Timer from "./Timer";
 
-const Chip = ({
-  pickData,
-  onClick,
-  timerActive,
-  timePerPick,
-  onMissedPick,
-  draftStatus
-}) => {
+const Chip = ({ pickData, onClick, draftStatus }) => {
   const myTeamNumber = pickData.team;
   const myRoundNumber = pickData.round;
 
@@ -21,28 +13,25 @@ const Chip = ({
     chipClass += status;
   }
 
-
   return (
     <div
       id={"c" + pickData.string}
       className="Chip-container"
-      onClick={() => onClick(myTeamNumber, myRoundNumber)}
+      onClick={() => {
+        if (draftStatus !== "confirmed") {
+          onClick(myTeamNumber, myRoundNumber);
+        }
+      }}
     >
       <div className={chipClass}>
         <div className="Chip-pick">
           <div>{pickData.string}</div>
         </div>
-        {chipClass === "Chip-onClock" && (
-          <Timer
-            initialTime={timePerPick}
-            isRunning={timerActive}
-            onTimesUp={() => onMissedPick()}
-          />
-        )}
         {status === "complete" && (
           <div className="Chip-name">
             <div>
-              {pickData.data.position !== "DST" && pickData.data.firstName[0] + ". " + pickData.data.lastName}
+              {pickData.data.position !== "DST" &&
+                pickData.data.firstName[0] + ". " + pickData.data.lastName}
             </div>
             <div>
               {pickData.data.position} - {pickData.data.playerTeam}

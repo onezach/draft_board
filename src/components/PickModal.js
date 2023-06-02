@@ -155,7 +155,6 @@ const PickModal = ({
                   onConfirm(data);
                 } else {
                   onConfirm(data, modalPickData.overall);
-                  //   onUpdatePick(modalPickData.overall, data);
                 }
                 clearInputs();
               }}
@@ -192,7 +191,7 @@ const PickModal = ({
           left: "35vw",
           right: "35vw",
           border: "1.5px solid black",
-          borderRadius: "15px",
+          borderRadius: "12px",
         },
       }}
     >

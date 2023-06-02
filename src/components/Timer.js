@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 
 const Timer = ({ initialTime, isRunning, onTimesUp }) => {
   const [time, setTime] = useState(initialTime);
@@ -21,13 +21,15 @@ const Timer = ({ initialTime, isRunning, onTimesUp }) => {
   }, [isRunning, time, expired, onTimesUp]);
 
   const formatTime = (time) => {
-    const minutes = Math.floor(time / 60).toString().padStart(2, '0');
-    const seconds = (time % 60).toString().padStart(2, '0');
+    const minutes = Math.floor(time / 60)
+      .toString()
+      .padStart(2, "0");
+    const seconds = (time % 60).toString().padStart(2, "0");
     return `${minutes}:${seconds}`;
   };
 
   return (
-    <div className='Timer'>
+    <div className={time > 10 ? "Timer" : "Timer-low"}>
       <div>{formatTime(time)}</div>
     </div>
   );
