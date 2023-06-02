@@ -28,6 +28,8 @@ const DraftBoard = ({ numRounds, timePerPick, teams }) => {
   const [pickTimerActive, setPickTimerActive] = useState(true);
   const [timeOnClock, setTimeOnClock] = useState(timePerPick);
 
+  const [validationErrors, setValidationErrors] = useState([]);
+
   const initializeBoard = () => {
     let teamsArr = generateNumArray(1, numTeams);
     let roundsArr = generateNumArray(1, numRounds);
@@ -142,16 +144,22 @@ const DraftBoard = ({ numRounds, timePerPick, teams }) => {
   };
 
   const validateDraft = () => {
+    let errors = [];
+
     for (let i = 0; i < picks.length; i++) {
       for (let j = 0; j < picks[i].length; j++) {
         if (picks[i][j].status !== "complete") {
-          console.log(picks[i][j].overall + " " + picks[i][j].status);
-          setDraftStatus("incomplete");
-          return;
+          // setDraftStatus("incomplete");
+          console.log("No pick selection at " + picks[i][j].string);
+          errors.push("No pick selection at " + picks[i][j].string);
+          // return;
         }
       }
     }
-    setDraftStatus("finished");
+    errors.length === 0
+      ? setDraftStatus("finished")
+      : setDraftStatus("incomplete");
+    setValidationErrors(errors);
   };
 
   const handleCloseResultsModal = () => setResultsModalActive(false);
@@ -162,13 +170,28 @@ const DraftBoard = ({ numRounds, timePerPick, teams }) => {
         return (
           <input
             type="button"
-            value={draftPaused ? "Resume draft": "Pause draft"}
+            value={draftPaused ? "Resume draft" : "Pause draft"}
             onClick={() => setDraftPaused((current) => !current)}
           />
         );
       case "incomplete":
         return (
-          <input type="button" value="Validate Draft" onClick={validateDraft} />
+          <div>
+            <div>
+              {validationErrors.map((error, e_idx) => (
+                <div style={{ color: "red" }} key={e_idx}>
+                  *{error}
+                </div>
+              ))}
+            </div>
+            <div>
+              <input
+                type="button"
+                value="Validate Draft"
+                onClick={validateDraft}
+              />
+            </div>
+          </div>
         );
       case "finished":
         return (
@@ -190,12 +213,14 @@ const DraftBoard = ({ numRounds, timePerPick, teams }) => {
     }
   };
 
+
+  // timer
   useEffect(() => {
     const timer = setInterval(() => {
       if (pickTimerActive && !draftPaused && timeOnClock > 0) {
         setTimeOnClock((prevTime) => prevTime - 1);
       }
-      if (timeOnClock <= 0) {
+      if (timeOnClock <= 0 && draftStatus === "active") {
         handleMissedPick();
       }
     }, 1000);
@@ -203,7 +228,13 @@ const DraftBoard = ({ numRounds, timePerPick, teams }) => {
     return () => {
       clearInterval(timer);
     };
-  }, [pickTimerActive, timeOnClock, handleMissedPick, draftPaused]);
+  }, [
+    pickTimerActive,
+    timeOnClock,
+    handleMissedPick,
+    draftPaused,
+    draftStatus,
+  ]);
 
   return (
     <div>
@@ -221,7 +252,9 @@ const DraftBoard = ({ numRounds, timePerPick, teams }) => {
           onConfirm={handleConfirmedPick}
           modalStatus={pickModalStatus}
           modalPickData={pickModalData}
+          picksData={picks}
           onRequestPickUpdate={handleRequestPickUpdate}
+          draftStatus={draftStatus}
         />
         <ResultsModal
           isOpen={resultsModalActive}

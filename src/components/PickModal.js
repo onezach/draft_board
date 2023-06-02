@@ -7,12 +7,55 @@ const PickModal = ({
   onConfirm,
   onClose,
   modalPickData,
+  picksData,
   onRequestPickUpdate,
+  draftStatus,
 }) => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [team, setTeam] = useState("");
   const [position, setPosition] = useState("");
+
+  const [validationErrors, setValidationErrors] = useState([]);
+
+  const validatePick = () => {
+    let errors = [];
+
+    // stage 1: all fields filled in
+    // if defense, just need team as well
+    let stage1 = true;
+    if (
+      position !== "DST" &&
+      (firstName === "" || lastName === "" || team === "" || position === "")
+    ) {
+      errors.push("Please fill in all fields");
+      stage1 = false;
+    }
+
+    if (position === "DST" && team === "") {
+      errors.push("Please fill in all fields");
+      stage1 = false;
+    }
+
+    // stage 2: no repeats
+    if (stage1) {
+      for (let i = 0; i < picksData.length; i++) {
+        for (let j = 0; j < picksData[i].length; j++) {
+          if (
+            picksData[i][j].data.firstName === firstName &&
+            picksData[i][j].data.lastName === lastName &&
+            picksData[i][j].data.playerTeam === team &&
+            picksData[i][j].data.position === position
+          ) {
+            errors.push("Player already drafted");
+          }
+        }
+      }
+    }
+
+    setValidationErrors(errors);
+    return errors.length === 0;
+  };
 
   const handleInput = (input, newValue) => {
     switch (input) {
@@ -26,6 +69,10 @@ const PickModal = ({
         setTeam(newValue);
         break;
       case "position":
+        if (newValue === "DST") {
+          setFirstName("");
+          setLastName("");
+        }
         setPosition(newValue);
         break;
       default:
@@ -37,6 +84,7 @@ const PickModal = ({
     setLastName("");
     setTeam("");
     setPosition("");
+    setValidationErrors([]);
   };
 
   const requestPickUpdate = () => {
@@ -141,6 +189,11 @@ const PickModal = ({
             </select>
           </div>
           <div>
+            {validationErrors.map((error, e_idx) => (
+              <div style={{ color: "red" }} key={e_idx}>
+                *{error}
+              </div>
+            ))}
             <input
               type="button"
               value="Submit"
@@ -151,12 +204,17 @@ const PickModal = ({
                   playerTeam: team,
                   position: position,
                 };
-                if (modalStatus === "onClock") {
-                  onConfirm(data);
-                } else {
-                  onConfirm(data, modalPickData.overall);
+
+                const errorCheck = validatePick();
+
+                if (errorCheck) {
+                  if (modalStatus === "onClock") {
+                    onConfirm(data);
+                  } else {
+                    onConfirm(data, modalPickData.overall);
+                  }
+                  clearInputs();
                 }
-                clearInputs();
               }}
             />
           </div>
@@ -166,11 +224,13 @@ const PickModal = ({
       return (
         <div>
           <p>{JSON.stringify(modalPickData)}</p>
-          <input
-            type="button"
-            value="Update Pick"
-            onClick={requestPickUpdate}
-          />
+          {draftStatus !== "confirmed" && (
+            <input
+              type="button"
+              value="Update Pick"
+              onClick={requestPickUpdate}
+            />
+          )}
         </div>
       );
     }
