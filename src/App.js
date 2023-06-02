@@ -3,7 +3,7 @@ import "./App.scss";
 import DraftBoard from "./components/DraftBoard";
 
 function App() {
-  const numRounds = 2;
+  const numRounds = 3;
   // const numTeams = 12;
 
   // const teams = [
