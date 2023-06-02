@@ -18,7 +18,7 @@ const Chip = ({ pickData, onClick, draftStatus }) => {
       id={"c" + pickData.string}
       className="Chip-container"
       onClick={() => {
-        if (draftStatus !== "confirmed") {
+        if (draftStatus !== "confirmed" && pickData.status !== "upcoming") {
           onClick(myTeamNumber, myRoundNumber);
         }
       }}

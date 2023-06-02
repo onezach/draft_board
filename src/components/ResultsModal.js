@@ -30,13 +30,14 @@ const ResultsModal = ({ isOpen, onClose, data }) => {
     <ReactModal
       isOpen={isOpen}
       onRequestClose={onClose}
+      ariaHideApp={false}
       style={{
         content: {
           background: "#fff",
-          top: "10vh",
-          bottom: "10vh",
-          left: "7.5vw",
-          right: "7.5vw",
+          top: "12.5vh",
+          bottom: "7.5vh",
+          left: "5vw",
+          right: "5vw",
           border: "1.5px solid black",
           borderRadius: "12px",
         },

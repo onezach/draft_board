@@ -183,6 +183,7 @@ const PickModal = ({
         onClose();
         clearInputs();
       }}
+      ariaHideApp={false}
       style={{
         content: {
           background: "#fff",

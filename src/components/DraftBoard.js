@@ -14,6 +14,7 @@ const DraftBoard = ({ numRounds, timePerPick, teams }) => {
 
   const [boardInitialized, setBoardInitialized] = useState(false);
   const [draftStatus, setDraftStatus] = useState("active");
+  const [draftPaused, setDraftPaused] = useState(false);
 
   const [currentPick, setCurrentPick] = useState(1);
   const [picks, setPicks] = useState([]);
@@ -51,7 +52,6 @@ const DraftBoard = ({ numRounds, timePerPick, teams }) => {
 
     return picks.map((team, t_index) => (
       <div key={"team" + (t_index + 1) + "_row"} className="Row-container">
-        {/* <Label team_name={teams[t_index]} team_number={t_index + 1} /> */}
         <div id={"t" + t_index + 1} className={"Label-double"}>
           <p>{teams[t_index]}</p>
         </div>
@@ -162,8 +162,8 @@ const DraftBoard = ({ numRounds, timePerPick, teams }) => {
         return (
           <input
             type="button"
-            value="Toggle Draft"
-            onClick={() => setPickTimerActive((current) => !current)}
+            value={draftPaused ? "Resume draft": "Pause draft"}
+            onClick={() => setDraftPaused((current) => !current)}
           />
         );
       case "incomplete":
@@ -192,7 +192,7 @@ const DraftBoard = ({ numRounds, timePerPick, teams }) => {
 
   useEffect(() => {
     const timer = setInterval(() => {
-      if (pickTimerActive && timeOnClock > 0) {
+      if (pickTimerActive && !draftPaused && timeOnClock > 0) {
         setTimeOnClock((prevTime) => prevTime - 1);
       }
       if (timeOnClock <= 0) {
@@ -203,7 +203,7 @@ const DraftBoard = ({ numRounds, timePerPick, teams }) => {
     return () => {
       clearInterval(timer);
     };
-  }, [pickTimerActive, timeOnClock, handleMissedPick]);
+  }, [pickTimerActive, timeOnClock, handleMissedPick, draftPaused]);
 
   return (
     <div>
