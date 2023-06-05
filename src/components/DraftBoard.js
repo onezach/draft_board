@@ -260,6 +260,7 @@ const DraftBoard = ({ numRounds, timePerPick, teams }) => {
           isOpen={resultsModalActive}
           onClose={handleCloseResultsModal}
           data={picks}
+          teams={teams}
         />
         <div>{buildChips()}</div>
       </div>

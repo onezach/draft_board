@@ -1,7 +1,7 @@
 import React from "react";
 import ReactModal from "react-modal";
 
-const ResultsModal = ({ isOpen, onClose, data }) => {
+const ResultsModal = ({ isOpen, onClose, data, teams }) => {
   const dataViz = () => {
     return (
       <div style={{ flexDirection: "row", display: "flex" }}>
