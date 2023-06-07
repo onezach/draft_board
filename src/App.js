@@ -1,4 +1,3 @@
-// import "./App.css";
 import "./App.scss";
 import DraftBoard from "./components/DraftBoard";
 import React, { useState } from "react";
@@ -13,7 +12,19 @@ function App() {
   const [timePerPick, setTimePerPick] = useState(0);
   const [timeConfirmed, setTimeConfirmed] = useState(false);
 
+  const [isImport, setIsImport] = useState(false);
   const [startDraft, setStartDraft] = useState(false);
+
+  const getOptions = () => {
+    const options = {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+
+    return options;
+  };
 
   const updateTeams = (newValue, idx) => {
     const updatedArray = teams.map((team, i) => {
@@ -176,7 +187,33 @@ function App() {
   const initializeDraft = () => {
     return (
       <div>
-        <div>{getNumTeams()}</div>
+        {!numTeamsConfirmed && (
+          <div>
+            {getNumTeams()} or{" "}
+            <input
+              id="import"
+              name="import"
+              value="Import from Last Save"
+              type="button"
+              onClick={() => {
+                fetch("http://localhost:5000/import", getOptions())
+                  .then((r) => r.json())
+                  .then((r) => {
+                    setNumTeams(r["numTeams"]);
+                    setTeams(r["teams"]);
+                    setNumRounds(r["numRounds"]);
+                    setTimePerPick(r["timePerPick"]);
+                    setNumTeamsConfirmed(true);
+                    setTeamsConfirmed(true);
+                    setNumRoundsConfirmed(true);
+                    setTimeConfirmed(true);
+                    setIsImport(true);
+                    setStartDraft(true);
+                  });
+              }}
+            />
+          </div>
+        )}
         <div>{numTeamsConfirmed && getTeams()}</div>
         <div>{teamsConfirmed && getRounds()}</div>
         <div>{numRoundsConfirmed && getTime()}</div>
@@ -217,6 +254,7 @@ function App() {
           numRounds={numRounds}
           teams={teams}
           timePerPick={timePerPick}
+          isImport={isImport}
         />
       )}
     </div>

@@ -136,3 +136,19 @@ $defaultRadius: 12px;
   display: flex;
   flex-direction: row;
 }
+
+.Results-team-container {
+  margin: 1%;
+  border: solid black 1px;
+  border-radius: $defaultRadius;
+  width: 18%;
+  padding: 1%;
+}
+
+.Results-team-name {
+  font-size: 15px;
+}
+
+.Results-team-picks {
+  font-size: 12px;
+}

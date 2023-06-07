@@ -8,7 +8,7 @@ import {
   formatTime,
 } from "../StaticFunctions";
 
-const DraftBoard = ({ numRounds, timePerPick, teams }) => {
+const DraftBoard = ({ numRounds, timePerPick, teams, isImport }) => {
   const numTeams = teams.length;
   const totalPicks = numRounds * numTeams;
 
@@ -29,6 +29,39 @@ const DraftBoard = ({ numRounds, timePerPick, teams }) => {
   const [timeOnClock, setTimeOnClock] = useState(timePerPick);
 
   const [validationErrors, setValidationErrors] = useState([]);
+
+  const getOptions = (mode, picks, currentPick, draftStatus) => {
+    if (mode === "save") {
+      const params = {
+        picks: picks,
+        currentPick: currentPick,
+        numTeams: numTeams,
+        teams: teams,
+        numRounds: numRounds,
+        timePerPick: timePerPick,
+        draftStatus: draftStatus,
+      };
+
+      const options = {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(params),
+      };
+
+      return options;
+    } else if (mode === "import") {
+      const options = {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      };
+
+      return options;
+    }
+  };
 
   const initializeBoard = () => {
     let teamsArr = generateNumArray(1, numTeams);
@@ -114,6 +147,20 @@ const DraftBoard = ({ numRounds, timePerPick, teams }) => {
       })
     );
 
+    fetch(
+      "http://localhost:5000/save",
+      getOptions(
+        "save",
+        confirmNewPick,
+        pickNumber === currentPick
+          ? Math.min(currentPick + 1, totalPicks)
+          : currentPick,
+        pickNumber === totalPicks ? "incomplete" : "active"
+      )
+    )
+      .then((r) => r.json())
+      .then((r) => console.log(r));
+
     setPicks(confirmNewPick);
     handleClosePickModal();
 
@@ -149,10 +196,8 @@ const DraftBoard = ({ numRounds, timePerPick, teams }) => {
     for (let i = 0; i < picks.length; i++) {
       for (let j = 0; j < picks[i].length; j++) {
         if (picks[i][j].status !== "complete") {
-          // setDraftStatus("incomplete");
-          console.log("No pick selection at " + picks[i][j].string);
+          // console.log("No pick selection at " + picks[i][j].string);
           errors.push("No pick selection at " + picks[i][j].string);
-          // return;
         }
       }
     }
@@ -168,11 +213,28 @@ const DraftBoard = ({ numRounds, timePerPick, teams }) => {
     switch (draftStatus) {
       case "active":
         return (
-          <input
-            type="button"
-            value={draftPaused ? "Resume draft" : "Pause draft"}
-            onClick={() => setDraftPaused((current) => !current)}
-          />
+          <div>
+            <input
+              type="button"
+              value={draftPaused ? "Resume draft" : "Pause draft"}
+              onClick={() => setDraftPaused((current) => !current)}
+            />
+            {isImport && (
+              <input
+                type="button"
+                value={"Import from Last Save"}
+                onClick={() =>
+                  fetch("http://localhost:5000/import", getOptions("import"))
+                    .then((r) => r.json())
+                    .then((r) => {
+                      setPicks(r["picks"]);
+                      setCurrentPick(r["currentPick"]);
+                      setDraftStatus(r["draftStatus"]);
+                    })
+                }
+              />
+            )}
+          </div>
         );
       case "incomplete":
         return (
@@ -212,7 +274,6 @@ const DraftBoard = ({ numRounds, timePerPick, teams }) => {
       default:
     }
   };
-
 
   // timer
   useEffect(() => {
