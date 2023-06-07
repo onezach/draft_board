@@ -4,7 +4,6 @@ from flask_cors import cross_origin
 import json
 import csv
 
-picks = {}
 last_save = {}
 
 app = Flask(__name__)
@@ -17,8 +16,7 @@ def base():
     return response
 
 
-
-@app.route("/save", methods=['POST', 'GET'])
+@app.route("/save", methods=['POST'])
 @cross_origin()
 def save():
     try:
@@ -31,8 +29,7 @@ def save():
         return jsonify(message="Save unsuccessful")
 
 
-
-@app.route("/import", methods=['POST', 'GET'])
+@app.route("/import", methods=['GET'])
 @cross_origin()
 def import_last_save():
     try:
@@ -44,8 +41,7 @@ def import_last_save():
         return last_save
 
 
-
-@app.route("/export", methods=['POST', 'GET'])
+@app.route("/export", methods=['POST'])
 @cross_origin()
 def export():
     try:
