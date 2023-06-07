@@ -71,6 +71,10 @@ const ResultsModal = ({ isOpen, onClose, data, teams }) => {
       .then((r) => {
         setAttemptExport(true);
         setExportSuccess(r["status"]);
+      })
+      .catch(() => {
+        setAttemptExport(true);
+        setExportSuccess(false);
       });
   };
 

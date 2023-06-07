@@ -209,7 +209,8 @@ function App() {
                     setTimeConfirmed(true);
                     setIsImport(true);
                     setStartDraft(true);
-                  });
+                  })
+                  .catch(() => {});
               }}
             />
           </div>

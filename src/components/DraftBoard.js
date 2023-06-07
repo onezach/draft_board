@@ -159,7 +159,8 @@ const DraftBoard = ({ numRounds, timePerPick, teams, isImport }) => {
       )
     )
       .then((r) => r.json())
-      .then((r) => console.log(r));
+      .then((r) => console.log(r))
+      .catch(() => {});
 
     setPicks(confirmNewPick);
     handleClosePickModal();
@@ -231,6 +232,7 @@ const DraftBoard = ({ numRounds, timePerPick, teams, isImport }) => {
                       setCurrentPick(r["currentPick"]);
                       setDraftStatus(r["draftStatus"]);
                     })
+                    .catch(() => {})
                 }
               />
             )}
