@@ -223,7 +223,13 @@ const PickModal = ({
     } else if (modalStatus === "complete") {
       return (
         <div>
-          <p>{JSON.stringify(modalPickData)}</p>
+          {/* <p>{JSON.stringify(modalPickData)}</p> */}
+          <p>
+            {modalPickData.data.firstName} {modalPickData.data.lastName} -{" "}
+            {modalPickData.data.position}, {modalPickData.data.playerTeam}
+          </p>
+          <p>Pick {modalPickData.string}</p>
+
           {draftStatus !== "confirmed" && (
             <input
               type="button"

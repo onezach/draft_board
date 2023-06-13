@@ -87,7 +87,7 @@ const DraftBoard = ({ numRounds, timePerPick, teams, isImport }) => {
 
     return picks.map((team, t_index) => (
       <div key={"team" + (t_index + 1) + "_row"} className="Row-container">
-        <div id={"t" + t_index + 1} className={"Label-double"}>
+        <div id={"t" + t_index + 1} className={"Label"}>
           <p>{teams[t_index]}</p>
         </div>
         {team.map((round, r_index) => (

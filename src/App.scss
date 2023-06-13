@@ -3,15 +3,6 @@
   justify-content: center;
 }
 
-@mixin label($height: 5vh) {
-  @include centerCenter();
-  border-radius: $defaultRadius;
-  display: flex;
-  width: 10vw;
-  height: $height;
-  margin: 0.25vmax;
-}
-
 @mixin chip($backgroud-color: white) {
   background-color: $backgroud-color;
   border-radius: $defaultRadius;
@@ -62,11 +53,12 @@ $defaultRadius: 12px;
 }
 
 .Label {
-  @include label();
-}
-
-.Label-double {
-  @include label($height: 10vh);
+  @include centerCenter();
+  border-radius: $defaultRadius;
+  display: flex;
+  width: 10vw;
+  height: 10vh;
+  margin: 0.25vmax;
 }
 
 .Chip-container {
@@ -84,31 +76,31 @@ $defaultRadius: 12px;
 }
 
 .Chip-QB {
-    @include chip($backgroud-color: lightblue);
+  @include chip($backgroud-color: lightblue);
 }
 
 .Chip-RB {
-    @include chip($backgroud-color: orange);
+  @include chip($backgroud-color: orange);
 }
 
 .Chip-WR {
-    @include chip($backgroud-color: yellow);
+  @include chip($backgroud-color: yellow);
 }
 
 .Chip-TE {
-    @include chip($backgroud-color: lightgreen);
+  @include chip($backgroud-color: lightgreen);
 }
 
 .Chip-K {
-    @include chip($backgroud-color: lightseagreen);
+  @include chip($backgroud-color: lightseagreen);
 }
 
 .Chip-DST {
-    @include chip($backgroud-color: lightgrey);
+  @include chip($backgroud-color: lightgrey);
 }
 
 .Chip-missed {
-    @include chip($backgroud-color: red);
+  @include chip($backgroud-color: red);
 }
 
 .Chip-pick {
@@ -151,4 +143,62 @@ $defaultRadius: 12px;
 
 .Results-team-picks {
   font-size: 12px;
+}
+
+.Init {
+  margin: 1%;
+  display: flex;
+  width: 30em;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.Init-section {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  border-bottom: solid black 1px;
+}
+
+.Init-teams-section {
+  width: 100%;
+}
+
+.Init-teams-map {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  @include centerCenter();
+}
+
+.Init-number-input {
+  text-align: center;
+  border-radius: $defaultRadius;
+}
+
+.Init-container {
+  display: flex;
+  justify-content: space-between;
+  width: 90%;
+  margin: 1%;
+}
+
+.Init-number-input-container {
+  display: flex;
+  width: 100%;
+  @include centerCenter();
+}
+
+.Init-import {
+  display: flex;
+  @include centerCenter();
+}
+
+.Start-button {
+  text-align: center;
+  border-radius: $defaultRadius;
+  @include centerCenter();
+  width: 10em;
+  height: 5em;
+  font-size: 20px;
 }

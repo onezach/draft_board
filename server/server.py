@@ -12,7 +12,7 @@ app = Flask(__name__)
 @app.route("/", methods=['POST', 'GET'])
 @cross_origin()
 def base():
-    response = jsonify(message="Simple server is running!")
+    response = jsonify(message="Server active")
     return response
 
 

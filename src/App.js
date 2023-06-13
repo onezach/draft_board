@@ -58,16 +58,19 @@ function App() {
   // get numTeams
   const getNumTeams = () => {
     return (
-      <div>
-        <label htmlFor="numTeams">Number of teams: </label>
-        <input
-          id="numTeams"
-          name="numTeams"
-          size={12}
-          value={numTeams}
-          disabled={numTeamsConfirmed}
-          onChange={(e) => handleInput("num_teams", e.target.value)}
-        />
+      <div className="Init-number-input-container">
+        <div className="Init-container">
+          <label htmlFor="numTeams">Number of teams: </label>
+          <input
+            id="numTeams"
+            name="numTeams"
+            className="Init-number-input"
+            size={4}
+            value={numTeams}
+            disabled={numTeamsConfirmed}
+            onChange={(e) => handleInput("num_teams", e.target.value)}
+          />
+        </div>
         {numTeams > 0 && !numTeamsConfirmed && (
           <input
             id="confirm_num_teams"
@@ -95,22 +98,24 @@ function App() {
   const getTeams = () => {
     const inputMap = teams.map((team_val, idx) => {
       return (
-        <div key={"ti_" + idx}>
-          Team {idx + 1}:{" "}
-          <input
-            id={"ti_" + idx}
-            name={"ti_" + idx}
-            value={team_val}
-            disabled={teamsConfirmed}
-            onChange={(e) => handleInput("teams", e.target.value, idx)}
-          />
+        <div key={"ti_" + idx} className="Init-container">
+          <label htmlFor={"ti_" + idx}>Team {idx + 1}: </label>
+          <div>
+            <input
+              id={"ti_" + idx}
+              name={"ti_" + idx}
+              value={team_val}
+              disabled={teamsConfirmed}
+              onChange={(e) => handleInput("teams", e.target.value, idx)}
+            />
+          </div>
         </div>
       );
     });
 
     return (
-      <div>
-        <div>{inputMap}</div>
+      <div className="Init-teams-section">
+        <div className="Init-teams-map">{inputMap}</div>
         <div>
           {checkAllTeamsFilled() && !teamsConfirmed && (
             <input
@@ -129,13 +134,15 @@ function App() {
   // get rounds
   const getRounds = () => {
     return (
-      <div>
-        <div>
+      <div className="Init-number-input-container">
+        <div className="Init-container">
           <label htmlFor="num_rounds_i">Number of Rounds: </label>
           <input
             id="num_rounds_i"
             name="num_rounds_i"
             value={numRounds}
+            size={4}
+            className="Init-number-input"
             disabled={numRoundsConfirmed}
             onChange={(e) => handleInput("rounds", e.target.value)}
           />
@@ -158,14 +165,16 @@ function App() {
   // get time
   const getTime = () => {
     return (
-      <div>
-        <div>
+      <div className="Init-number-input-container">
+        <div className="Init-container">
           <label htmlFor="time_i">Time Per Pick: </label>
           <input
             id="time_i"
             name="time_i"
             value={timePerPick}
+            size={4}
             disabled={timeConfirmed}
+            className="Init-number-input"
             onChange={(e) => handleInput("time", e.target.value)}
           />
         </div>
@@ -186,38 +195,46 @@ function App() {
 
   const initializeDraft = () => {
     return (
-      <div>
+      <div className="Init">
         {!numTeamsConfirmed && (
           <div>
-            {getNumTeams()} or{" "}
-            <input
-              id="import"
-              name="import"
-              value="Import from Last Save"
-              type="button"
-              onClick={() => {
-                fetch("http://localhost:5000/import", getOptions())
-                  .then((r) => r.json())
-                  .then((r) => {
-                    setNumTeams(r["numTeams"]);
-                    setTeams(r["teams"]);
-                    setNumRounds(r["numRounds"]);
-                    setTimePerPick(r["timePerPick"]);
-                    setNumTeamsConfirmed(true);
-                    setTeamsConfirmed(true);
-                    setNumRoundsConfirmed(true);
-                    setTimeConfirmed(true);
-                    setIsImport(true);
-                    setStartDraft(true);
-                  })
-                  .catch(() => {});
-              }}
-            />
+            {getNumTeams()}
+            <div className="Init-import">
+              <input
+                id="import"
+                name="import"
+                value="Import from Last Save"
+                type="button"
+                onClick={() => {
+                  fetch("http://localhost:5000/import", getOptions())
+                    .then((r) => r.json())
+                    .then((r) => {
+                      setNumTeams(r["numTeams"]);
+                      setTeams(r["teams"]);
+                      setNumRounds(r["numRounds"]);
+                      setTimePerPick(r["timePerPick"]);
+                      setNumTeamsConfirmed(true);
+                      setTeamsConfirmed(true);
+                      setNumRoundsConfirmed(true);
+                      setTimeConfirmed(true);
+                      setIsImport(true);
+                      setStartDraft(true);
+                    })
+                    .catch(() => {});
+                }}
+              />
+            </div>
           </div>
         )}
-        <div>{numTeamsConfirmed && getTeams()}</div>
-        <div>{teamsConfirmed && getRounds()}</div>
-        <div>{numRoundsConfirmed && getTime()}</div>
+        <div className={numTeamsConfirmed ? "Init-section" : ""}>
+          {numTeamsConfirmed && getTeams()}
+        </div>
+        <div className={teamsConfirmed ? "Init-section" : ""}>
+          {teamsConfirmed && getRounds()}
+        </div>
+        <div className={numRoundsConfirmed ? "Init-section" : ""}>
+          {numRoundsConfirmed && getTime()}
+        </div>
       </div>
     );
   };
@@ -232,13 +249,16 @@ function App() {
   };
 
   const startButton = () => (
-    <input
-      id="startButton"
-      name="startButton"
-      value="Start Draft"
-      type="button"
-      onClick={() => setStartDraft(true)}
-    />
+    <div>
+      <input
+        id="startButton"
+        name="startButton"
+        value="Start Draft!"
+        className="Start-button"
+        type="button"
+        onClick={() => setStartDraft(true)}
+      />
+    </div>
   );
 
   return (
