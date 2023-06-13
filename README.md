@@ -1,4 +1,4 @@
-# Simple Fantasy Football Draft Board
+# Simple Fantasy Football Draft Board - ReactJS
 Self-contained fantasy football league draft board, customizable by number of teams, team names, number of rounds, and time per pick. The intent for this draft board program is that it would be used in an in-person setting in place of a traditional paper board or white board.
 
 ## Initialization
