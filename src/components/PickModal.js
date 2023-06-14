@@ -174,6 +174,7 @@ const PickModal = ({
               <option value="TB">TB</option>
               <option value="TEN">TEN</option>
               <option value="WAS">WAS</option>
+              <option value="FA">FA</option>
             </select>
           </div>
           <div>

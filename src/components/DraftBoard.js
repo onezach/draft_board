@@ -18,7 +18,14 @@ const DraftBoard = ({ numRounds, timePerPick, teams, isImport }) => {
 
   const [currentPick, setCurrentPick] = useState(1);
   const [picks, setPicks] = useState([]);
-  const [nextPositionNumbers, setNextPositionNumbers] = useState({"QB": 1, "RB": 1, "WR": 1, "TE": 1, "K": 1, "DST": 1});
+  const [nextPositionNumbers, setNextPositionNumbers] = useState({
+    QB: 1,
+    RB: 1,
+    WR: 1,
+    TE: 1,
+    K: 1,
+    DST: 1,
+  });
 
   const [pickModalActive, setPickModalActive] = useState(false);
   const [pickModalStatus, setPickModalStatus] = useState();
@@ -31,7 +38,7 @@ const DraftBoard = ({ numRounds, timePerPick, teams, isImport }) => {
 
   const [validationErrors, setValidationErrors] = useState([]);
 
-  const getOptions = (mode, picks, currentPick, draftStatus) => {
+  const getOptions = (mode, picks, currentPick, draftStatus, posNums) => {
     if (mode === "save") {
       const params = {
         picks: picks,
@@ -41,6 +48,7 @@ const DraftBoard = ({ numRounds, timePerPick, teams, isImport }) => {
         numRounds: numRounds,
         timePerPick: timePerPick,
         draftStatus: draftStatus,
+        nextPositionNumbers: posNums
       };
 
       const options = {
@@ -133,10 +141,18 @@ const DraftBoard = ({ numRounds, timePerPick, teams, isImport }) => {
   }, [currentPick, timePerPick, totalPicks]);
 
   const handleConfirmedPick = (pickedPlayerData, pickNumber = currentPick) => {
+    let tempPosNums = nextPositionNumbers;
+
     const confirmNewPick = picks.map((team) =>
       team.map((round) => {
         if (round.overall === pickNumber) {
-          setNextPositionNumbers(prev => ({...prev, [pickedPlayerData.position]: prev[pickedPlayerData.position] + 1}));
+          if (round.overall === currentPick) {
+            setNextPositionNumbers((prev) => ({
+              ...prev,
+              [pickedPlayerData.position]: prev[pickedPlayerData.position] + 1,
+            }));
+            tempPosNums[pickedPlayerData.position] = tempPosNums[pickedPlayerData.position] + 1;
+          }
           return { ...round, status: "complete", data: pickedPlayerData };
         } else if (
           pickNumber === currentPick &&
@@ -157,7 +173,8 @@ const DraftBoard = ({ numRounds, timePerPick, teams, isImport }) => {
         pickNumber === currentPick
           ? Math.min(currentPick + 1, totalPicks)
           : currentPick,
-        pickNumber === totalPicks ? "incomplete" : "active"
+        pickNumber === totalPicks ? "incomplete" : "active", 
+        tempPosNums
       )
     )
       .then((r) => r.json())
@@ -193,6 +210,97 @@ const DraftBoard = ({ numRounds, timePerPick, teams, isImport }) => {
     setPickModalStatus("update");
   };
 
+  const reevaluatePositionNumbers = () => {
+    let qb = 1;
+    let rb = 1;
+    let wr = 1;
+    let te = 1;
+    let k = 1;
+    let dst = 1;
+
+    let temp = picks.map((team) => team.map((round) => round));
+
+    for (let i = 0; i < numRounds; i++) {
+      let done = false;
+      for (let j = 0; j < numTeams; j++) {
+        if (i % 2 === 0) {
+          switch (temp[j][i].data.position) {
+            case "QB":
+              temp[j][i].data.positionNumber = qb;
+              qb++;
+              break;
+            case "RB":
+              temp[j][i].data.positionNumber = rb;
+              rb++;
+              break;
+            case "WR":
+              temp[j][i].data.positionNumber = wr;
+              wr++;
+              break;
+            case "TE":
+              temp[j][i].data.positionNumber = te;
+              te++;
+              break;
+            case "K":
+              temp[j][i].data.positionNumber = k;
+              k++;
+              break;
+            case "DST":
+              temp[j][i].data.positionNumber = dst;
+              dst++;
+              break;
+            default:
+              done = true;
+              break;
+          }
+        } else {
+          switch (temp[numTeams - j - 1][i].data.position) {
+            case "QB":
+              temp[numTeams - j - 1][i].data.positionNumber = qb;
+              qb++;
+              break;
+            case "RB":
+              temp[numTeams - j - 1][i].data.positionNumber = rb;
+              rb++;
+              break;
+            case "WR":
+              temp[numTeams - j - 1][i].data.positionNumber = wr;
+              wr++;
+              break;
+            case "TE":
+              temp[numTeams - j - 1][i].data.positionNumber = te;
+              te++;
+              break;
+            case "K":
+              temp[numTeams - j - 1][i].data.positionNumber = k;
+              k++;
+              break;
+            case "DST":
+              temp[numTeams - j - 1][i].data.positionNumber = dst;
+              dst++;
+              break;
+            default:
+              done = true;
+              break;
+          }
+        }
+      }
+      if (done) {
+        break;
+      }
+    }
+
+    setPicks(temp);
+    setNextPositionNumbers({
+      QB: qb,
+      RB: rb,
+      WR: wr,
+      TE: te,
+      K: k,
+      DST: dst,
+    });
+  };
+
   const validateDraft = () => {
     let errors = [];
 
@@ -222,6 +330,11 @@ const DraftBoard = ({ numRounds, timePerPick, teams, isImport }) => {
               value={draftPaused ? "Resume draft" : "Pause draft"}
               onClick={() => setDraftPaused((current) => !current)}
             />
+            <input
+              type="button"
+              value="Re-evaluate Position Numbers"
+              onClick={reevaluatePositionNumbers}
+            />
             {isImport && (
               <input
                 type="button"
@@ -233,6 +346,7 @@ const DraftBoard = ({ numRounds, timePerPick, teams, isImport }) => {
                       setPicks(r["picks"]);
                       setCurrentPick(r["currentPick"]);
                       setDraftStatus(r["draftStatus"]);
+                      setNextPositionNumbers(r["nextPositionNumbers"]);
                     })
                     .catch(() => {})
                 }
