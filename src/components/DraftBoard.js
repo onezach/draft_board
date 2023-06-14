@@ -18,6 +18,7 @@ const DraftBoard = ({ numRounds, timePerPick, teams, isImport }) => {
 
   const [currentPick, setCurrentPick] = useState(1);
   const [picks, setPicks] = useState([]);
+  const [nextPositionNumbers, setNextPositionNumbers] = useState({"QB": 1, "RB": 1, "WR": 1, "TE": 1, "K": 1, "DST": 1});
 
   const [pickModalActive, setPickModalActive] = useState(false);
   const [pickModalStatus, setPickModalStatus] = useState();
@@ -135,6 +136,7 @@ const DraftBoard = ({ numRounds, timePerPick, teams, isImport }) => {
     const confirmNewPick = picks.map((team) =>
       team.map((round) => {
         if (round.overall === pickNumber) {
+          setNextPositionNumbers(prev => ({...prev, [pickedPlayerData.position]: prev[pickedPlayerData.position] + 1}));
           return { ...round, status: "complete", data: pickedPlayerData };
         } else if (
           pickNumber === currentPick &&
@@ -316,6 +318,7 @@ const DraftBoard = ({ numRounds, timePerPick, teams, isImport }) => {
           modalStatus={pickModalStatus}
           modalPickData={pickModalData}
           picksData={picks}
+          nextPositionNumbers={nextPositionNumbers}
           onRequestPickUpdate={handleRequestPickUpdate}
           draftStatus={draftStatus}
         />

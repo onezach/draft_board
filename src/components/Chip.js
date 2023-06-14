@@ -1,6 +1,6 @@
 import React from "react";
 
-const Chip = ({ pickData, onClick, draftStatus }) => {
+const Chip = ({ pickData, onClick}) => {
   const myTeamNumber = pickData.team;
   const myRoundNumber = pickData.round;
 
@@ -34,7 +34,7 @@ const Chip = ({ pickData, onClick, draftStatus }) => {
                 pickData.data.firstName[0] + ". " + pickData.data.lastName}
             </div>
             <div>
-              {pickData.data.position} - {pickData.data.playerTeam}
+              {pickData.data.position}{pickData.data.positionNumber} - {pickData.data.playerTeam}
             </div>
           </div>
         )}

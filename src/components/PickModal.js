@@ -8,6 +8,7 @@ const PickModal = ({
   onClose,
   modalPickData,
   picksData,
+  nextPositionNumbers,
   onRequestPickUpdate,
   draftStatus,
 }) => {
@@ -15,6 +16,7 @@ const PickModal = ({
   const [lastName, setLastName] = useState("");
   const [team, setTeam] = useState("");
   const [position, setPosition] = useState("");
+  const [positionNumber, setPositionNumber] = useState(0);
 
   const [validationErrors, setValidationErrors] = useState([]);
 
@@ -74,6 +76,7 @@ const PickModal = ({
           setLastName("");
         }
         setPosition(newValue);
+        setPositionNumber(nextPositionNumbers[newValue]);
         break;
       default:
     }
@@ -85,6 +88,7 @@ const PickModal = ({
     setTeam("");
     setPosition("");
     setValidationErrors([]);
+    setPositionNumber(0);
   };
 
   const requestPickUpdate = () => {
@@ -93,6 +97,7 @@ const PickModal = ({
     setLastName(modalPickData.data.lastName);
     setTeam(modalPickData.data.playerTeam);
     setPosition(modalPickData.data.position);
+    setPositionNumber(modalPickData.data.positionNumber)
   };
 
   const modalContent = () => {
@@ -187,6 +192,7 @@ const PickModal = ({
               <option value="K">K</option>
               <option value="DST">D/ST</option>
             </select>
+            {positionNumber > 0 && " " + positionNumber}
           </div>
           <div>
             {validationErrors.map((error, e_idx) => (
@@ -203,6 +209,7 @@ const PickModal = ({
                   lastName: lastName,
                   playerTeam: team,
                   position: position,
+                  positionNumber: positionNumber
                 };
 
                 const errorCheck = validatePick();

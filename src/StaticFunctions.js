@@ -18,14 +18,14 @@ export const generateNumArray = (start, num) => {
  *
  * @param {Number} round_number
  * @param {Number} team_number
- * @returns {{round: Number, pick: Number, overall: Number, team: String, string: String, status: String, data: {firstName: String, lastName: String, playerTeam: String, position: String}}} Pick position data
+ * @returns {{round: Number, pick: Number, overall: Number, team: String, string: String, status: String, data: {firstName: String, lastName: String, playerTeam: String, position: String, positionNumber: Number}}} Pick position data
  */
 export const computePickValues = (round_number, team_number, numTeams) => {
   let string = round_number + ".";
   let pick = 0;
   let overallPick = 0;
   let status = "upcoming";
-  let data = { firstName: "", lastName: "", playerTeam: "", position: "" };
+  let data = { firstName: "", lastName: "", playerTeam: "", position: "", positionNumber: 0 };
 
   if (round_number % 2 === 1) {
     pick = team_number;
