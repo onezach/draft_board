@@ -1,5 +1,5 @@
 # Simple Fantasy Football Draft Board - ReactJS
-Self-contained fantasy football league draft board, customizable by number of teams, team names, number of rounds, and time per pick. The intent for this draft board program is that it would be used in an in-person setting in place of a traditional paper board or white board.
+My first attempt at a self-contained fantasy football league draft board, customizable by number of teams, team names, number of rounds, and time per pick. The intent for this draft board program is that it would be used in an in-person setting in place of a traditional paper board or white board.
 
 ## Initialization
 For starters, boot up the draft program using `npm start` from within the src/ folder. Once the program is running, you will be prompted to either enter how many teams will be in the draft or import from your last save (see Flask Server section). Once your number of teams is confirmed, you will then be prompted to edit the teams' names, set the number of rounds for your draft, and set the time (in seconds) per pick. Once each of these fields is confirmed, you will then be able to click the "Start Draft!" button, which will take you to the draft board.

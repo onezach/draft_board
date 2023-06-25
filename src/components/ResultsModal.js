@@ -45,13 +45,13 @@ const ResultsModal = ({ isOpen, onClose, data, teams }) => {
     ));
 
     return (
-      <div style={{ flexDirection: "row", display: "flex" }}>{mappings}</div>
+      <div className="Results-teams-array">{mappings}</div>
     );
   };
 
   const modalContent = () => {
     return (
-      <div>
+      <div className="Results-modal">
         <div>{dataViz()}</div>
         <div>
           <input type="button" value="Close" onClick={onClose} />

@@ -128,20 +128,37 @@ $defaultRadius: 12px;
   flex-direction: row;
 }
 
+.Results-modal {
+  flex-wrap:nowrap;
+  // overflow: scroll;
+}
+
 .Results-team-container {
   margin: 1%;
   border: solid black 1px;
   border-radius: $defaultRadius;
-  width: 18%;
+  width: 16em;
+  display: flex;
+  flex-direction: column;
   padding: 1%;
+  align-items: center;
+}
+
+.Results-teams-array {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
 }
 
 .Results-team-name {
   font-size: 15px;
+  width: 100px;
+  text-align: center;
 }
 
 .Results-team-picks {
   font-size: 12px;
+  width: 100%;
 }
 
 .Init {

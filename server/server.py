@@ -3,6 +3,7 @@ from flask_cors import cross_origin
 
 import json
 import csv
+import datetime
 
 last_save = {}
 
@@ -19,10 +20,12 @@ def base():
 @app.route("/save", methods=['POST'])
 @cross_origin()
 def save():
+    
     try:
         data = request.get_json()
         with open(f"last_save.json", mode="w") as json_file:
             json.dump(data, json_file)
+            last_save.update(data)
         return jsonify(message="Save successful")
 
     except:
@@ -46,13 +49,18 @@ def import_last_save():
 def export():
     try:
         body = request.get_json()
-        with open("results.csv", mode="w") as csvfile:
-            writer = csv.writer(csvfile)
-            for team in body['data']:
-                team_picks = []
-                for round in team:
-                    team_picks.append(f"{round['data']['position']} {round['data']['firstName']} {round['data']['lastName']}")
-                writer.writerow(team_picks)
+        month = datetime.datetime.now().month
+        day = datetime.datetime.now().day
+        year = datetime.datetime.now().year
+        with open(f"results_{month}{day}{year}.json", mode="w") as jsonfile:
+            # writer = csv.writer(csvfile)
+            json.dump(last_save, jsonfile)
+            # writer.writerows(body['data'])
+            # for team in body['data']:
+            #     team_picks = []
+            #     for round in team:
+            #         team_picks.append(f"{round['data']['position']} {round['data']['firstName']} {round['data']['lastName']}")
+            #     writer.writerow(team_picks)
     except:
         return jsonify(message="Failed to export", status=False)
     return jsonify(message="Export successful", status=True)

@@ -48,7 +48,7 @@ const DraftBoard = ({ numRounds, timePerPick, teams, isImport }) => {
         numRounds: numRounds,
         timePerPick: timePerPick,
         draftStatus: draftStatus,
-        nextPositionNumbers: posNums
+        nextPositionNumbers: posNums,
       };
 
       const options = {
@@ -151,7 +151,8 @@ const DraftBoard = ({ numRounds, timePerPick, teams, isImport }) => {
               ...prev,
               [pickedPlayerData.position]: prev[pickedPlayerData.position] + 1,
             }));
-            tempPosNums[pickedPlayerData.position] = tempPosNums[pickedPlayerData.position] + 1;
+            tempPosNums[pickedPlayerData.position] =
+              tempPosNums[pickedPlayerData.position] + 1;
           }
           return { ...round, status: "complete", data: pickedPlayerData };
         } else if (
@@ -173,7 +174,7 @@ const DraftBoard = ({ numRounds, timePerPick, teams, isImport }) => {
         pickNumber === currentPick
           ? Math.min(currentPick + 1, totalPicks)
           : currentPick,
-        pickNumber === totalPicks ? "incomplete" : "active", 
+        pickNumber === totalPicks ? "incomplete" : "active",
         tempPosNums
       )
     )
@@ -210,7 +211,7 @@ const DraftBoard = ({ numRounds, timePerPick, teams, isImport }) => {
     setPickModalStatus("update");
   };
 
-  const reevaluatePositionNumbers = () => {
+  const evaluatePositionNumbers = () => {
     let qb = 1;
     let rb = 1;
     let wr = 1;
@@ -333,7 +334,7 @@ const DraftBoard = ({ numRounds, timePerPick, teams, isImport }) => {
             <input
               type="button"
               value="Re-evaluate Position Numbers"
-              onClick={reevaluatePositionNumbers}
+              onClick={evaluatePositionNumbers}
             />
             {isImport && (
               <input
@@ -378,7 +379,22 @@ const DraftBoard = ({ numRounds, timePerPick, teams, isImport }) => {
           <input
             type="button"
             value="Confirm Draft"
-            onClick={() => setDraftStatus("confirmed")}
+            onClick={() => {
+              setDraftStatus("confirmed");
+              fetch(
+                "http://localhost:5000/save",
+                getOptions(
+                  "save",
+                  picks,
+                  totalPicks,
+                  "confirmed",
+                  nextPositionNumbers
+                )
+              )
+                .then((r) => r.json())
+                .then((r) => console.log(r))
+                .catch(() => {});
+            }}
           />
         );
       case "confirmed":

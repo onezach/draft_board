@@ -24,4 +24,4 @@ yarn-error.log*
 
 # local
 last_save.json
-results.csv
+results*
